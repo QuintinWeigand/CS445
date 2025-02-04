@@ -33,7 +33,8 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-    int sockfd, new_fd[2];  // listen on sock_fd, new connections on new_fd[0] and new_fd[1]
+    // We create a socket file descriptor and create 2 empty socket connections that we will inevtiably allow
+    int sockfd, new_fd[2];
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
     socklen_t sin_size;
@@ -42,11 +43,13 @@ int main(void)
     char s[INET6_ADDRSTRLEN];
     int rv;
 
+    // Settings hints memory address to 0
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_family = AF_UNSPEC; // We do not specify IPv4 or IPv6
+    hints.ai_socktype = SOCK_STREAM; // Using the TCP protocol
     hints.ai_flags = AI_PASSIVE; // use my IP
 
+    // Here we are using our IP (NULL) because WE ARE the server
     if ((rv = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
@@ -54,34 +57,40 @@ int main(void)
 
     // Loop through all the results and bind to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
+        // We try to create a socket
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
             perror("server: socket");
             continue;
         }
 
+        // Makes sure we are able to reuse the socket
         if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
                 sizeof(int)) == -1) {
             perror("setsockopt");
             exit(1);
         }
 
+        // We try to bind the socket
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
             close(sockfd);
             perror("server: bind");
             continue;
         }
 
+        // If we break, we successfully created a socker and binded the socket
         break;
     }
 
     freeaddrinfo(servinfo); // all done with this structure
 
+    // Socket wasn't created, so we just exit the program with error code 2
     if (p == NULL)  {
         fprintf(stderr, "server: failed to bind\n");
         exit(1);
     }
 
+    // We try to listen to the socket, if we fail we return 1;
     if (listen(sockfd, BACKLOG) == -1) {
         perror("listen");
         exit(1);
@@ -99,6 +108,7 @@ int main(void)
 
     while(1) {  // main accept() loop
         sin_size = sizeof their_addr;
+        // We go through each client and accpet their socket
         for (int i = 0; i < 2; i++) {
             new_fd[i] = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
             if (new_fd[i] == -1) {
@@ -106,17 +116,18 @@ int main(void)
                 continue;
             }
 
+            // Print the address of the client connected (network to printable)
             inet_ntop(their_addr.ss_family,
                 get_in_addr((struct sockaddr *)&their_addr),
                 s, sizeof s);
             printf("server: got connection from %s\n", s);
         }
 
-        // Now we have both clients connected
+        // Now we are sure that that both of our sockets are connected and are able to send and recieve
         if (fork() == 0) {  // Child process
             close(sockfd); // Child doesn't need the listener
 
-            // Forward messages between both clients
+            // Forward messages between both clients, our buffer size was 1024
             char buf[1024];
             int bytes_received;
 

@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
+    // Here we are using the server's ip address that we used in the first argement of the executable. 
     if ((rv = getaddrinfo(argv[1], PORT, &hints, &servinfo)) != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
 
     // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
+        // If an error occurs in these next if statments, we continue which does our increment and trys the loop over again. 
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                              p->ai_protocol)) == -1) {
             perror("client: socket");
@@ -60,27 +62,31 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        break;
+        break; // If we break that means both the socket creation and binding was successful.
     }
 
+    // If we got through the end of the linked list and did not find anything, we error our and return error code 2
     if (p == NULL) {
         fprintf(stderr, "client: failed to connect\n");
         return 2;
     }
 
+    // Getting the information of our port and making it network to printable to be able print the ip to the screen.
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
               s, sizeof s);
     printf("client: connecting to %s\n", s);
 
     freeaddrinfo(servinfo); // all done with this structure
 
-    // Main chat loop
+    // Chat loop
     while(1) {
+        // This section allows for input from the user into readfds
         FD_ZERO(&readfds);
         FD_SET(sockfd, &readfds);
         FD_SET(STDIN_FILENO, &readfds);  // Add stdin to fd_set to read user input
 
-        timeout.tv_sec = 1;  // Set timeout to 1 second
+        // We have a timeout of a second to avoid spamming and unaccounted for errors
+        timeout.tv_sec = 1;
         timeout.tv_usec = 0;
 
         int activity = select(sockfd + 1, &readfds, NULL, NULL, &timeout);
@@ -90,7 +96,7 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        // If something to read from the server
+        // If something to read from the server we save the size of the input and print it to the client
         if (FD_ISSET(sockfd, &readfds)) {
             numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0);
             if (numbytes == -1) {
@@ -101,12 +107,11 @@ int main(int argc, char *argv[])
             printf("Received from server: %s\n", buf);
         }
 
-        // If something to read from stdin (user input)
+        // If the client types something we read the whole line from stdin and send it to the server respectivly
         if (FD_ISSET(STDIN_FILENO, &readfds)) {
-            // Get user input
+            
             fgets(buf, MAXDATASIZE, stdin);
 
-            // Send input message to the server
             if (send(sockfd, buf, strlen(buf), 0) == -1) {
                 perror("send");
                 exit(1);
@@ -114,6 +119,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    // Close the socket the client made
     close(sockfd);
 
     return 0;
