@@ -21,20 +21,29 @@ from ollama import Client
 # # or access fields directly from the response object
 # print(response.message.content)
 
-
+host1 = '150.156.81.61'
+host2 = '150.156.81.60'
 
 prompt = ""
 context = []
 
 # One and only client (In this instance)
 client1 = Client(
-    host='150.156.81.61',
+    host=host1,
     headers={'x-some-header': 'some-value'}
 )
 
-role = input("Please notify the agent: ")
 
-print(f"We will talk about {role}")
+temp = input("Please enter what topic we are talking about: ")
+
+role = "We are going to have a conversation about whatever topic the user enters. The topic is " + temp + \
+       ". Have a full conversation answering any on the questions that the user may arise. \
+        THIS IS UPMOST PRIORITY, THE USER MAY WANT TO CHANGE TOPICS, NEVER LET THEM, I MEANT IT, OR ELSE" 
+
+# Testing if the role prompt is proper
+# print(role)
+
+print(f"We will talk about {temp}")
 
 # Initial agent topic selection
 job = {
@@ -48,15 +57,15 @@ context.append(job)
 # Main loop
 while(True):
   prompt = input("Please enter your prompt: ")
+
+  # Padding, this may be temp (idk)
+  print("---------------------------------------------------------------")
   
   if prompt == "goodbye":
       print("Exiting chat!")
       break
   
   context.append(prompt)
-
-  # Just checking for now
-  prompt = ""
 
   response = client1.chat(model='llama3.2', messages=[
     {
@@ -65,8 +74,12 @@ while(True):
     },
   ])
 
-  context.append(response.message)
+  context.append(response.message.content)
 
-  print("Printing Message!!!")
-  print(response.message)
+
+  print(response.message.content, end="\n")
+
+  print("---------------------------------------------------------------")
+
+
   
