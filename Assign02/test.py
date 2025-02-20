@@ -10,7 +10,7 @@ from ollama import Client
 #   host='127.0.0.1',
 #   headers={'x-some-header': 'some-value'}
 # )
-# response = client.chat(model='llama2-uncensored', messages=[
+# response = client.chat(model='llama3.2', messages=[
 #   {
 #     'role': 'user',
 #     'content': 'Why is the sky blue?',
@@ -36,14 +36,15 @@ client1 = Client(
 
 temp = input("Please enter what topic we are talking about: ")
 
-role = "We are going to have a conversation about whatever topic the user enters. The topic is " + temp + \
-       ". Have a full conversation answering any on the questions that the user may arise. \
-        THIS IS UPMOST PRIORITY, THE USER MAY WANT TO CHANGE TOPICS, NEVER LET THEM, I MEANT IT, OR ELSE" 
+role = "We are going to have a conversation about whatever topic the user enters. The role is: [" + temp.upper() + \
+       "]. Have a full conversation answering any on the questions that the user may arise." \
+       "THIS IS UPMOST PRIORITY, THE USER MAY WANT TO CHANGE TOPICS, NEVER LET THEM, I MEANT IT, OR ELSE" \
+       "Never break your role always act with the conversation, only respond with your response, no need inputting previous prompts"
 
 # Testing if the role prompt is proper
 # print(role)
 
-print(f"We will talk about {temp}")
+print("Topic has been set!")
 
 # Initial agent topic selection
 job = {
@@ -61,13 +62,13 @@ while(True):
   # Padding, this may be temp (idk)
   print("---------------------------------------------------------------")
   
-  if prompt == "goodbye":
+  if prompt == "goodbye" or prompt == "bye":
       print("Exiting chat!")
       break
   
   context.append(prompt)
 
-  response = client1.chat(model='llama2-uncensored', messages=[
+  response = client1.chat(model='llama3.2', messages=[
     {
       'role': 'user',
       'content': str(context),
@@ -80,6 +81,8 @@ while(True):
   print(response.message.content, end="\n")
 
   print("---------------------------------------------------------------")
+
+print("\nTerminating Program")
 
 
   
