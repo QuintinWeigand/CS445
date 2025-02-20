@@ -1,5 +1,3 @@
-#!/home/ronny/./ollama-test/bin/python3
-
 # sample python3 ollama API script
 # used venv
 # python3 -m venv ollama-test
@@ -9,7 +7,7 @@
 from ollama import Client
 
 client = Client(
-  host='http://192.168.42.21:11434',
+  host='127.0.0.1',
   headers={'x-some-header': 'some-value'}
 )
 response = client.chat(model='llama3.2', messages=[
