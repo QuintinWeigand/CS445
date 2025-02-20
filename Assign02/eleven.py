@@ -1,11 +1,14 @@
+import os
 from dotenv import load_dotenv
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
 
 load_dotenv()
 
+API_KEY = os.getenv('API_KEY')
+
 client = ElevenLabs(
-  api_key="YOUR_API_KEY",
+    api_key=API_KEY
 )
 
 audio = client.text_to_speech.convert(
