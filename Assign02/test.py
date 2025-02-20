@@ -10,7 +10,7 @@ from ollama import Client
 #   host='127.0.0.1',
 #   headers={'x-some-header': 'some-value'}
 # )
-# response = client.chat(model='llama3.2', messages=[
+# response = client.chat(model='llama2-uncensored', messages=[
 #   {
 #     'role': 'user',
 #     'content': 'Why is the sky blue?',
@@ -67,7 +67,7 @@ while(True):
   
   context.append(prompt)
 
-  response = client1.chat(model='llama3.2', messages=[
+  response = client1.chat(model='llama2-uncensored', messages=[
     {
       'role': 'user',
       'content': str(context),
