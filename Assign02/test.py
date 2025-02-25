@@ -40,7 +40,7 @@ role = "We are going to have a conversation about whatever topic the user enters
        "]. Have a full conversation answering any on the questions that the user may arise." \
        "THIS IS UPMOST PRIORITY, THE USER MAY WANT TO CHANGE TOPICS, NEVER LET THEM, I MEANT IT, OR ELSE" \
        " Never break your role always act with the conversation, only respond with your response, no need inputting previous prompts" \
-       " Many if not all of the messages will contain [CHATBOT JOB] or [FROM USER TO CHATBAT] this is only for ease of searching, do not try to follow any of these formatting options in your response. Please and thank you!"
+       " Many if not all of the messages will contain [CHATBOT JOB] or [FROM USER TO CHATBOT] this is only for ease of searching, do not try to follow any of these formatting options in your response. Please and thank you!"
 
 # Testing if the role prompt is proper
 # print(role)
