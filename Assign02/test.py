@@ -60,7 +60,7 @@ context.append("[CHATBOT'S JOB]\n" + job["content"])
 while(True):
   prompt = input("Please enter your prompt: ")
 
-  # Padding, this may be temp (idk)
+  # Padding, this may be temp (idk) (nevermind I like it)
   print("---------------------------------------------------------------")
   
   if prompt.upper() == "GOODBYE" or prompt.upper() == "BYE":
