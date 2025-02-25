@@ -79,7 +79,7 @@ while(True):
   context.append("[FROM USER TO CHATBOT]\n" + response.message.content)
 
 
-  print(response.message.content, end="\n")
+  print(response.message.content)
 
   print("---------------------------------------------------------------")
 
