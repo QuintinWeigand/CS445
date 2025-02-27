@@ -7,11 +7,6 @@ if not sys.argv[1]:
     print("Proper usage: python3 client.py SERVER_IP")
     exit(1)
 
-mins = float(input("How long would you like the conversation to run for (min): "))
-secs = mins * 60
-start_time = time.time()
-end_time = start_time + secs
-
 # Create ollama Client
 ollama_client = Client(
     host='150.156.81.61',
@@ -27,10 +22,17 @@ serv_ip = sys.argv[1]
 # Connect to server
 client.connect((serv_ip, 8090))
 
+mins = float(input("How long would you like the conversation to run for (min): "))
+secs = mins * 60
+start_time = time.time()
+end_time = start_time + secs
+print("\n")
+
 first_prompt = input("Tell the AI what you want it to be: ")
 first_prompt += " you must respond with answers less than 100 words."
 client.send(first_prompt.encode())
 context.append(first_prompt + "\n")
+print("\n---------------------------------------------------------------\n")
 
 curr_time = 0
 while(curr_time < end_time):
