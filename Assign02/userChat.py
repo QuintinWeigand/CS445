@@ -21,7 +21,10 @@ from ollama import Client
 # # or access fields directly from the response object
 # print(response.message.content)
 
-host1 = '150.156.81.62'
+host1 = '150.156.81.61'
+
+# ai_model = "deepseek-r1"
+ai_model = "llama3.2"
 
 prompt = ""
 context = []
@@ -68,7 +71,7 @@ while(True):
   
   context.append(prompt)
 
-  response = client1.chat(model='llama3.2', messages=[
+  response = client1.chat(model=ai_model, messages=[
     {
       'role': 'user',
       'content': str(context),
