@@ -21,8 +21,7 @@ from ollama import Client
 # # or access fields directly from the response object
 # print(response.message.content)
 
-host1 = '150.156.81.61'
-host2 = '150.156.81.60'
+host1 = '150.156.81.62'
 
 prompt = ""
 context = []
