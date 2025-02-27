@@ -25,7 +25,7 @@ while(True):
     # Receive from server
     response = client.recv(4096)
     print ("Llama: " + response.decode())
-    print("---------------------------------------------------------------")
+    print("---------------------------------------------------------------\n")
 
 
 # Close connection to server

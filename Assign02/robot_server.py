@@ -15,7 +15,7 @@ hostname = socket.gethostname()
 serv_ip = socket.gethostbyname(hostname)
 
 # Bind to incoming connections (looks for 5 connections)
-serv.bind((serv_ip, 8090))
+serv.bind((serv_ip, 8080))
 serv.listen(5)
 
 while True:
@@ -31,7 +31,8 @@ while True:
 
     # Print client response
     from_client = data.decode('utf8')
-    print (f'Client prompt: {from_client}')
+    print (f'Llama Client: {from_client}' + '\n')
+    print("---------------------------------------------------------------\n")
 
     # Add client prompt to context
     context.append(from_client)
@@ -46,6 +47,8 @@ while True:
     },
     ])
     content = response.message.content
+    print("Llama Server: " + content + "\n")
+    print("---------------------------------------------------------------\n")
     context.append(content)
     context_string = ""
     conn.send(content.encode())
