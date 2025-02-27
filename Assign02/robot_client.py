@@ -45,7 +45,7 @@ while(curr_time < end_time):
     print ("Llama Server: " + response + "\n")
     print("---------------------------------------------------------------\n")
 
-    new_prompt = ollama_client.chat(model='llama3.2', messages=[
+    new_prompt = ollama_client.chat(model='llama2-uncensored', messages=[
     {
       'role': 'user',
       'content': response + " you must respond with less than 100 words",
