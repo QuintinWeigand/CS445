@@ -5,6 +5,7 @@ host1 = '150.156.81.61'
 # ai_model = "deepseek-r1"
 ai_model = "llama3.2"
 
+
 prompt = ""
 context = []
 
