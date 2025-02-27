@@ -54,6 +54,7 @@ while(curr_time < end_time):
     new_prompt = new_prompt.message.content
     print("Llama Client: " + new_prompt + "\n")
     print("---------------------------------------------------------------\n")
+    time.sleep(2)
     client.send(new_prompt.encode())
     context.append(new_prompt + "\n")
 
