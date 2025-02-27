@@ -1,4 +1,5 @@
 import socket
+import time
 from ollama import Client
 
 # Create ollama Client
@@ -51,6 +52,7 @@ while True:
     print("---------------------------------------------------------------\n")
     context.append(content)
     context_string = ""
+    time.sleep(2)
     conn.send(content.encode())
 
     # Close connection to client
