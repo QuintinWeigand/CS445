@@ -15,7 +15,7 @@ hostname = socket.gethostname()
 serv_ip = socket.gethostbyname(hostname)
 
 # Bind to incoming connections (looks for 5 connections)
-serv.bind((serv_ip, 8080))
+serv.bind((serv_ip, 8090))
 serv.listen(5)
 
 while True:

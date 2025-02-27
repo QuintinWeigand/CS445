@@ -25,7 +25,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serv_ip = sys.argv[1]
 
 # Connect to server
-client.connect((serv_ip, 8080))
+client.connect((serv_ip, 8090))
 
 first_prompt = input("Tell the AI what you want it to be: ")
 first_prompt += " you must respond with answers less than 100 words."

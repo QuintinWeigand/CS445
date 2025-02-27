@@ -48,6 +48,7 @@ while True:
     content = response.message.content
     context.append(content)
     context_string = ""
+    
     conn.send(content.encode())
 
     # Close connection to client
