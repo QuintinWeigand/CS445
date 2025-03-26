@@ -20,17 +20,31 @@ const stockSchema = new mongoose.Schema({
 
 const Stock = mongoose.model('Stock', stockSchema, 'stock_prices');
 
-// Route to search tickers (exact match only)
+// Utility function to escape special characters in a regex
+function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+}
+
+// Route to search tickers (prioritize exact match, fallback to fuzzy matching)
 app.get('/api/search/:query', async (req, res) => {
-    const query = req.params.query.toUpperCase();
-    try {
-      const results = await Stock.find({ ticker: query }).limit(10); // Exact match only
-      res.json(results);
-    } catch (error) {
+  const query = req.params.query.toUpperCase();
+  try {
+      const exactMatch = await Stock.find({ ticker: query }).limit(10); // Exact match
+      if (exactMatch.length > 0) {
+          return res.json(exactMatch); // Return exact match if found
+      }
+
+      const escapedQuery = escapeRegex(query); // Escape special characters
+      const fuzzyMatches = await Stock.find({
+          ticker: { $regex: escapedQuery, $options: 'i' } // Fuzzy match
+      }).limit(10);
+
+      res.json(fuzzyMatches); // Return fuzzy matches if no exact match
+  } catch (error) {
       console.error('Error fetching stock data:', error);
       res.status(500).json({ message: 'Error fetching stock data' });
-    }
-});  
+  }
+});
 
 // Route to fetch stock data by ticker
 app.get('/api/ticker/:ticker', async (req, res) => {

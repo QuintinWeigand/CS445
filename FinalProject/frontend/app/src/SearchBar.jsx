@@ -19,7 +19,7 @@ const SearchBar = ({ onSelectStock }) => {
         setNoResults(true);
         return;
       }
-      setSuggestions(response.data); // Exact matches only
+      setSuggestions(response.data); // Fuzzy matches
       setNoResults(false);
     } catch (error) {
       console.error('Error fetching suggestions:', error);
