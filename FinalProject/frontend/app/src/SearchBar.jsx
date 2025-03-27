@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SearchBar = ({ onSelectStock }) => {
@@ -9,6 +10,7 @@ const SearchBar = ({ onSelectStock }) => {
 
   const inputRef = useRef(null); // Ref for the input field
   const dropdownRef = useRef(null); // Ref for the dropdown
+  const navigate = useNavigate(); // Hook for navigation
 
   const fetchSuggestions = async (query) => {
     if (!query) return;
@@ -36,7 +38,7 @@ const SearchBar = ({ onSelectStock }) => {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSelectStock(search);
+      navigate(`/${search.toUpperCase()}`); // Convert to uppercase before navigating
     }
   };
 
@@ -51,8 +53,9 @@ const SearchBar = ({ onSelectStock }) => {
   };
 
   const handleSelect = (ticker) => {
-    setSearch(ticker);
-    handleSelectStock(ticker);
+    const upperCaseTicker = ticker.toUpperCase(); // Convert to uppercase
+    setSearch(upperCaseTicker);
+    navigate(`/${upperCaseTicker}`); // Navigate to /:ticker in uppercase
     setSuggestions([]);
     setShowDropdown(false); // Hide dropdown after selection
   };

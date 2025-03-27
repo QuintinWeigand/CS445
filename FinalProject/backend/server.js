@@ -44,24 +44,22 @@ app.get('/api/search/:query', async (req, res) => {
       console.error('Error fetching stock data:', error);
       res.status(500).json({ message: 'Error fetching stock data' });
   }
-});
+}); 
 
-// Route to fetch stock data by ticker
-app.get('/api/ticker/:ticker', async (req, res) => {
-    try {
-      const query = req.params.ticker.toUpperCase();
-      const stockData = await Stock.find({ ticker: query }).limit(10);
-  
-      if (stockData.length === 0) {
-        return res.status(404).send('Ticker not found');
-      }
-      
-      res.json(stockData);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+// Route to fetch stock details for a specific ticker
+app.get('/api/stock/:ticker', async (req, res) => {
+  const ticker = req.params.ticker.toUpperCase();
+  try {
+    const stock = await Stock.findOne({ ticker });
+    if (!stock) {
+      return res.status(404).json({ message: 'Stock not found' });
     }
-});  
+    res.json(stock);
+  } catch (error) {
+    console.error('Error fetching stock details:', error);
+    res.status(500).json({ message: 'Error fetching stock details' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
