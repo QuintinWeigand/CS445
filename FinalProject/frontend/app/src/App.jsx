@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useParams, Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
+import StockDetails from './StockDetails';
+import HomeButton from './HomeButton';
+import StockCard from './StockCard';
 import './App.css';
 import axios from 'axios';
 
 const App = () => {
   const [stockData, setStockData] = useState(null);
+  const [stocks, setStocks] = useState([]);
+
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/stocks');
+        setStocks(response.data);
+      } catch (error) {
+        console.error('Error fetching stocks:', error);
+      }
+    };
+    fetchStocks();
+  }, []);
 
   const handleSelectStock = (stock) => {
     setStockData(stock);
@@ -19,6 +35,17 @@ const App = () => {
           element={
             <div>
               <SearchBar onSelectStock={handleSelectStock} />
+              <div className="stock-container">
+                {stocks.map((stock) => (
+                  <StockCard
+                    key={stock.ticker}
+                    ticker={stock.ticker}
+                    companyName={stock.company_name}
+                    price={stock.close_price}
+                    percentChange={stock.percent_change}
+                  />
+                ))}
+              </div>
             </div>
           }
         />
@@ -26,8 +53,18 @@ const App = () => {
           path="/:ticker"
           element={
             <div>
-              <SearchBar onSelectStock={handleSelectStock} />
-              <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: stockData ? 'space-between' : 'flex-end',
+                  padding: '0 20px' 
+                }}
+              >
+                <SearchBar onSelectStock={handleSelectStock} />
+                <HomeButton />
+              </div>
+              <div>
                 <StockDetails />
               </div>
             </div>
@@ -36,51 +73,6 @@ const App = () => {
       </Routes>
     </Router>
   );
-};
-
-const StockDetails = () => {
-  const { ticker } = useParams();
-  const [stockDetails, setStockDetails] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchStockDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/stock/${ticker}`);
-        setStockDetails(response.data);
-      } catch (err) {
-        setError('Stock details not found.');
-      }
-    };
-
-    fetchStockDetails();
-  }, [ticker]);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!stockDetails) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div>
-      <h1>Stock Details for {stockDetails.ticker}</h1>
-      <p>Company Name: {stockDetails.company_name}</p>
-      <p>Price: ${stockDetails.close_price}</p>
-      <p>Percent Change: {stockDetails.percent_change}%</p>
-    </div>
-  );
-};
-
-const styles = {
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '10px',
-  },
 };
 
 export default App;

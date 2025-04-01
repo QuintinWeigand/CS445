@@ -8,7 +8,6 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/stock_database');
 
 const stockSchema = new mongoose.Schema({
@@ -20,33 +19,30 @@ const stockSchema = new mongoose.Schema({
 
 const Stock = mongoose.model('Stock', stockSchema, 'stock_prices');
 
-// Utility function to escape special characters in a regex
 function escapeRegex(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Route to search tickers (prioritize exact match, fallback to fuzzy matching)
 app.get('/api/search/:query', async (req, res) => {
   const query = req.params.query.toUpperCase();
   try {
-      const exactMatch = await Stock.find({ ticker: query }).limit(10); // Exact match
+      const exactMatch = await Stock.find({ ticker: query }).limit(10);
       if (exactMatch.length > 0) {
-          return res.json(exactMatch); // Return exact match if found
+          return res.json(exactMatch);
       }
 
-      const escapedQuery = escapeRegex(query); // Escape special characters
+      const escapedQuery = escapeRegex(query);
       const fuzzyMatches = await Stock.find({
-          ticker: { $regex: escapedQuery, $options: 'i' } // Fuzzy match
+          ticker: { $regex: escapedQuery, $options: 'i' }
       }).limit(10);
 
-      res.json(fuzzyMatches); // Return fuzzy matches if no exact match
+      res.json(fuzzyMatches);
   } catch (error) {
       console.error('Error fetching stock data:', error);
       res.status(500).json({ message: 'Error fetching stock data' });
   }
 }); 
 
-// Route to fetch stock details for a specific ticker
 app.get('/api/stock/:ticker', async (req, res) => {
   const ticker = req.params.ticker.toUpperCase();
   try {
@@ -58,6 +54,16 @@ app.get('/api/stock/:ticker', async (req, res) => {
   } catch (error) {
     console.error('Error fetching stock details:', error);
     res.status(500).json({ message: 'Error fetching stock details' });
+  }
+});
+
+app.get('/api/stocks', async (req, res) => {
+  try {
+    const stocks = await Stock.find();
+    res.json(stocks);
+  } catch (error) {
+    console.error('Error fetching stocks:', error);
+    res.status(500).json({ message: 'Error fetching stocks' });
   }
 });
 

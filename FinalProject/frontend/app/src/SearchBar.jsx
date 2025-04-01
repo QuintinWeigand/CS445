@@ -108,7 +108,7 @@ const styles = {
   container: {
     position: 'absolute',
     top: '10px',
-    left: '10px', // Align to the left side of the screen
+    right: '70px',
     width: '300px',
     fontFamily: 'Calibri, sans-serif',
   },

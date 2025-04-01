@@ -1,0 +1,26 @@
+.stock-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stock-card h3 {
+  margin: 0;
+  font-size: 1.5em;
+}
+
+.stock-card p {
+  margin: 4px 0;
+}
+
+.stock-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  padding: 16px;
+}
