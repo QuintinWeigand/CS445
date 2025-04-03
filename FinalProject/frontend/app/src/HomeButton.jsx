@@ -17,6 +17,7 @@ const HomeButton = () => {
         transition: 'background-color 0.3s ease',
         position: 'relative', // Ensure alignment with the search bar
         top: '5px', // Adjust the top position to align with the search bar
+        right: '-1840px', // Adjust the right position to align with the search bar
       }}
       onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'}
       onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
