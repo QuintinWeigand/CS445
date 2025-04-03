@@ -33,7 +33,10 @@ const StockCard = ({ ticker, companyName, price, percentChange, isButton = true 
     <div
       className="stock-card"
       onClick={isButton ? handleClick : undefined}
-      style={{ cursor: isButton ? 'pointer' : 'default' }}
+      style={{
+        cursor: isButton ? 'pointer' : 'default',
+        pointerEvents: isButton ? 'auto' : 'none', // Disable hover effect if not a button
+      }}
     >
       <h3>{stockData.ticker || ticker}</h3>
       <p>{stockData.company_name || companyName}</p>

@@ -86,20 +86,27 @@ const SearchBar = ({ onSelectStock }) => {
         placeholder="Search ticker..."
         style={styles.input}
       />
-      {showDropdown && suggestions.length > 0 && (
+      {showDropdown && (
         <ul ref={dropdownRef} style={styles.dropdown}> {/* Attach the dropdown ref */}
-          {suggestions.map((suggestion) => (
-            <li
-              key={suggestion.ticker}
-              onClick={() => handleSelect(suggestion.ticker)}
-              style={styles.dropdownItem}
-            >
-              {suggestion.ticker} - {suggestion.company_name} {/* Removed price and percent change */}
-            </li>
-          ))}
+          {suggestions.length > 0 ? 
+            suggestions.map((suggestion) => (
+              <li
+                key={suggestion.ticker}
+                onClick={() => handleSelect(suggestion.ticker)}
+                style={styles.dropdownItem}
+              >
+                {suggestion.ticker} - {suggestion.company_name} {/* Removed price and percent change */}
+              </li>
+            ))
+          : 
+            noResults && search && (
+              <li style={{...styles.dropdownItem, ...styles.noResults}}>
+                Ticker data not found!
+              </li>
+            )
+          }
         </ul>
       )}
-      {noResults && <div style={styles.noResults}>Ticker data not found!</div>}
     </div>
   );
 };
@@ -108,8 +115,9 @@ const styles = {
   container: {
     position: 'absolute',
     top: '10px',
-    right: '70px',
-    width: '300px',
+    right: '10px', // Adjusted for responsiveness
+    width: '90%', // Use percentage for adaptability
+    maxWidth: '300px', // Set a maximum width
     fontFamily: 'Calibri, sans-serif',
   },
   input: {
@@ -141,9 +149,8 @@ const styles = {
     fontSize: '14px',
   },
   noResults: {
-    padding: '8px',
     color: '#999',
-    fontSize: '14px',
+    cursor: 'default',
   },
 };
 

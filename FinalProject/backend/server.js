@@ -19,6 +19,18 @@ const stockSchema = new mongoose.Schema({
 
 const Stock = mongoose.model('Stock', stockSchema, 'stock_prices');
 
+const stockHistorySchema = new mongoose.Schema({
+  ticker: String,
+  history: [
+    {
+      close_price: Number,
+      date_and_time: Date,
+    },
+  ],
+});
+
+const StockHistory = mongoose.model('StockHistory', stockHistorySchema, 'stock_history');
+
 function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -64,6 +76,16 @@ app.get('/api/stocks', async (req, res) => {
   } catch (error) {
     console.error('Error fetching stocks:', error);
     res.status(500).json({ message: 'Error fetching stocks' });
+  }
+});
+
+app.get('/api/stock_history', async (req, res) => {
+  try {
+    const stockHistory = await StockHistory.find();
+    res.json(stockHistory);
+  } catch (error) {
+    console.error('Error fetching stock history:', error);
+    res.status(500).json({ message: 'Error fetching stock history' });
   }
 });
 
