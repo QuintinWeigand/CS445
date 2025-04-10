@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import SearchBar from './SearchBar';
 import StockCard from './StockCard';
 import axios from 'axios';
 import './TickerPage.css';
@@ -100,13 +99,12 @@ const TickerPage = () => {
   }
 
   if (!stock) {
-    return <div className="loading-container">Loading...</div>;
+    return <div></div>;
   }
 
   return (
     <div className="ticker-page">
       <div className="header">
-        <SearchBar />
       </div>
 
       <div className="main-content">

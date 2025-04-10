@@ -1,12 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
+
+const JWT_SECRET = 'your_jwt_secret_key'; // Replace with a secure secret key
 
 mongoose.connect('mongodb://localhost:27017/stock_database');
 
@@ -86,6 +90,72 @@ app.get('/api/stock_history', async (req, res) => {
   } catch (error) {
     console.error('Error fetching stock history:', error);
     res.status(500).json({ message: 'Error fetching stock history' });
+  }
+});
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  balance: { type: Number, default: 5000 }, // Added balance field with default value
+}, { versionKey: false }); // Disabled the version key
+
+const User = mongoose.model('User', userSchema, 'users');
+
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, password: hashedPassword });
+    await newUser.save();
+
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).send({ message: 'User registered successfully', token });
+  } catch (error) {
+    res.status(400).send({ message: 'Error registering user: ' + error.message });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+      res.status(200).send({ message: 'Login successful', token });
+    } else {
+      res.status(401).send({ message: 'Invalid username or password' });
+    }
+  } catch (error) {
+    res.status(500).send({ message: 'Error logging in: ' + error.message });
+  }
+});
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.status(401).json({ message: 'Unauthorized: Token missing' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Forbidden: Invalid token' });
+    req.user = user;
+    next();
+  });
+}
+
+app.get('/api/user_balance', authenticateToken, async (req, res) => {
+  const username = req.user.username;
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ balance: user.balance });
+  } catch (error) {
+    console.error('Error retrieving user balance:', error);
+    res.status(500).json({ message: 'Error retrieving user balance' });
   }
 });
 
