@@ -1,5 +1,6 @@
 use mongodb::Client;
 use mongodb::bson;
+use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
 use time::{Duration, OffsetDateTime};
@@ -35,7 +36,16 @@ fn get_ticker_vector(file_path: &str) -> Vec<String> {
 
 #[tokio::main]
 async fn main() {
-    let file_path = "tickers.txt";
+    // Get the command-line arguments
+    let args: Vec<String> = env::args().collect();
+
+    // Check if the file path argument is provided
+    if args.len() < 2 {
+        eprintln!("Usage: {} <file_path>", args[0]);
+        return;
+    }
+
+    let file_path = &args[1];
 
     // Mongo stuff
     let uri = "mongodb://localhost:27017";

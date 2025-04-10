@@ -1,0 +1,2 @@
+30,40,50 9 * * 1-5 <path/to/executable>
+*/10 10-15 * * 1-5 <path/to/executable>
