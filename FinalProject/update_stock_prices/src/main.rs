@@ -59,6 +59,8 @@ async fn main() {
 
     let ticker_vector = get_ticker_vector(file_path);
 
+    println!("Updating {} tickers and their history.\n--------------------", ticker_vector.len());
+
     let provider = match yahoo::YahooConnector::new() {
         Ok(provider) => provider,
         Err(e) => {
@@ -67,12 +69,25 @@ async fn main() {
         }
     };
 
+    // Calculate end_date and start_date once, outside the loop
+    let mut end_date = OffsetDateTime::now_utc();
+
+    // Adjust end_date to the most recent trading day if it's a weekend
+    if end_date.weekday() == time::Weekday::Saturday {
+        end_date -= Duration::days(1);
+    } else if end_date.weekday() == time::Weekday::Sunday {
+        end_date -= Duration::days(2);
+    }
+
+    // Calculate the start_date based on the adjusted end_date
+    let start_date = if end_date.weekday() == time::Weekday::Monday {
+        end_date - Duration::days(3)
+    } else {
+        end_date - Duration::days(1)
+    };
+
     // Fetch quotes for all tickers in the vector
     for (i, ticker) in ticker_vector.iter().enumerate() {
-        // Calculate the date range for the last two days
-        let end_date = OffsetDateTime::now_utc();
-        let start_date = end_date - Duration::days(2);
-
         let response = provider
             .get_quote_history(ticker, start_date, end_date)
             .await;
@@ -95,7 +110,7 @@ async fn main() {
         };
 
         if quotes.len() < 2 {
-            eprintln!("Not enough data for {ticker}");
+            eprintln!("Not enough data for {ticker}. Quote length: {} | (We want 2) |", quotes.len());
             continue;
         }
 
@@ -111,10 +126,14 @@ async fn main() {
             0.0
         };
 
-        println!(
-            "Index: [{i}]\nTicker: {ticker}\nClose Price: {:.2}\nPercent Change: {:.2}%\nPrevious Close: {:.2}",
-            current_close, percent_change, previous_close
-        );
+        // Old verbose std out
+        // println!(
+        //     "Index: [{i}]\nTicker: {ticker}\nClose Price: {:.2}\nPercent Change: {:.2}%\nPrevious Close: {:.2}",
+        //     current_close, percent_change, previous_close
+        // );
+
+        // New more minimal std out
+        println!("(Gathering Ticker[{i}]: {ticker} information) Updating Database");
 
         let index_stock_ticker = StockTicker::new(
             ticker.as_str(),
