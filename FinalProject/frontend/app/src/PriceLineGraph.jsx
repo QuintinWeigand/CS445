@@ -9,22 +9,18 @@ const PriceLineGraph = ({ data }) => {
   const maxPrice = Math.ceil(Math.max(...prices));
 
   // Add buffer to ensure line is always visible
-  const priceRange = maxPrice - minPrice;
   // Buffer is now variable: 7% below minPrice, 7% above maxPrice
   const lowerBuffer = minPrice !== 0 ? Math.abs(minPrice * 0.07) : 2;
   const upperBuffer = maxPrice !== 0 ? Math.abs(maxPrice * 0.07) : 2;
   const domainMin = minPrice - lowerBuffer;
   const domainMax = maxPrice + upperBuffer;
 
-  console.log('PriceLineGraph data:', data);
-  console.log('prices:', prices, 'minPrice:', minPrice, 'maxPrice:', maxPrice);
-
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="dateTimeLabel" minTickGap={20} />
-        <YAxis domain={[domainMin, domainMax]} tickFormatter={price => `$${price}`} />
+        <YAxis domain={[domainMin, domainMax]} tickFormatter={price => `$${Math.round(price)}`} />
         <Tooltip 
           formatter={(value, name) => name === 'price' ? [`$${value.toFixed(2)}`, 'Price'] : value}
           labelFormatter={label => label}

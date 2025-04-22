@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 const app = express();
 const PORT = 5000;
@@ -216,6 +217,58 @@ app.post('/api/sell', authenticateToken, async (req, res) => {
     res.json({ message: 'Stock sold', stocks: user.stocks, balance: user.balance });
   } catch (error) {
     res.status(500).json({ message: 'Error selling stock: ' + error.message });
+  }
+});
+
+app.post('/api/ollama-chat', async (req, res) => {
+  const { message, model, conversation, systemPrompt } = req.body;
+  if (!message) {
+    return res.status(400).json({ message: 'Message is required' });
+  }
+  try {
+    let messages = Array.isArray(conversation) && conversation.length > 0
+      ? conversation
+      : [{ role: 'user', content: message }];
+    // If a systemPrompt is provided, prepend it as a system message
+    if (systemPrompt) {
+      messages = [{ role: 'system', content: systemPrompt }, ...messages];
+    }
+    const ollamaResponse = await axios({
+      method: 'post',
+      url: 'http://localhost:11434/api/chat',
+      data: {
+        model: model || 'llama3.2',
+        messages
+      },
+      responseType: 'stream',
+    });
+
+    let fullContent = '';
+    ollamaResponse.data.on('data', (chunk) => {
+      const lines = chunk.toString().split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const parsed = JSON.parse(line);
+          if (parsed.message && parsed.message.content) {
+            fullContent += parsed.message.content;
+          }
+        } catch (e) {
+          // Ignore parse errors for incomplete lines
+        }
+      }
+    });
+
+    ollamaResponse.data.on('end', () => {
+      res.json({ response: fullContent });
+    });
+
+    ollamaResponse.data.on('error', (err) => {
+      console.error('Ollama stream error:', err);
+      res.status(500).json({ message: 'Ollama stream error: ' + err.message });
+    });
+  } catch (error) {
+    console.error('Ollama agent error:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: 'Ollama agent error: ' + (error.response ? JSON.stringify(error.response.data) : error.message) });
   }
 });
 

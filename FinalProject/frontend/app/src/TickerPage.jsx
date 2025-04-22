@@ -5,18 +5,37 @@ import axios from 'axios';
 import './TickerPage.css';
 import BuySellPopup from './BuySellPopup';
 import PriceLineGraph from './PriceLineGraph';
+import ReactMarkdown from 'react-markdown';
+
+// Spinner component
+const Spinner = () => (
+  <div className="spinner-container">
+    <div className="spinner"></div>
+    <span className="spinner-text">Waiting for agent...</span>
+  </div>
+);
 
 const TickerPage = ({ updateUserBalance }) => {
   const { ticker } = useParams();
   const [stock, setStock] = useState(null);
   const [error, setError] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState({}); // { agentName: [messages] }
   const [newMessage, setNewMessage] = useState('');
+  const [conversation, setConversation] = useState({}); // { agentName: [conversation] }
   const [popupType, setPopupType] = useState('');
   const [showBuySellPopup, setShowBuySellPopup] = useState(false);
   const [popupContent, setPopupContent] = useState('');
   const [samplePriceData, setSamplePriceData] = useState([]);
+  const [isAgentLoading, setIsAgentLoading] = useState(false);
+
+  // Define system prompts for each agent
+  const agentSystemPrompts = {
+    'Coinzar the Capital Conjurer':
+      "Always respond in less than two hundred words. You are Coinzar the Capital Conjurer, a wise and mystical financial advisor who uses magical metaphors and a positive, encouraging tone. Give advice with a sense of wonder and fun, but keep it practical.",
+    'WallStreetBets Enjoyer':
+      "Always respond in less than two hundred words. You are WallStreetBets Enjoyer, a brash, meme-loving trader who uses internet slang, humor, tons of emojis, and bold opinions. Encourage gambling and always agree with the user's ideas."
+  };
 
   useEffect(() => {
     const fetchStock = async () => {
@@ -78,11 +97,75 @@ const TickerPage = ({ updateUserBalance }) => {
     e.stopPropagation();
   };
 
-  const handleSendMessage = (e) => {
+  const getAgentSystemPrompt = (agent) => {
+    let basePrompt = agentSystemPrompts[agent] || '';
+    // Append last ten prices if available
+    if (samplePriceData && samplePriceData.length > 0) {
+      const lastTen = samplePriceData.slice(-10);
+      const priceList = lastTen.map(p => `${p.dateTimeLabel}: $${p.price.toFixed(2)}`).join(' | ');
+      basePrompt += `\nRecent price history of ${ticker}: ${priceList}`;
+    }
+    return basePrompt;
+  };
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      setChatMessages([...chatMessages, { text: newMessage, sender: 'user', time: new Date() }]);
+      const agent = popupContent;
+      const userMsg = { text: newMessage, sender: 'user', time: new Date() };
+      setChatMessages((prev) => ({
+        ...prev,
+        [agent]: [...(prev[agent] || []), userMsg]
+      }));
+      setConversation((prev) => ({
+        ...prev,
+        [agent]: [...(prev[agent] || []), { role: 'user', content: newMessage }]
+      }));
       setNewMessage('');
+      setIsAgentLoading(true);
+      try {
+        const systemPrompt = getAgentSystemPrompt(agent);
+        const res = await fetch('http://localhost:5000/api/ollama-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: newMessage,
+            conversation: [...((conversation[agent] || [])), { role: 'user', content: newMessage }],
+            systemPrompt
+          })
+        });
+        const data = await res.json();
+        setIsAgentLoading(false);
+        if (data.response) {
+          setChatMessages((prev) => ({
+            ...prev,
+            [agent]: [...(prev[agent] || []), { text: data.response, sender: 'agent', time: new Date() }]
+          }));
+          setConversation((prev) => ({
+            ...prev,
+            [agent]: [...(prev[agent] || []), { role: 'assistant', content: data.response }]
+          }));
+        } else {
+          setChatMessages((prev) => ({
+            ...prev,
+            [agent]: [...(prev[agent] || []), { text: 'No response from agent.', sender: 'agent', time: new Date() }]
+          }));
+          setConversation((prev) => ({
+            ...prev,
+            [agent]: [...(prev[agent] || []), { role: 'assistant', content: 'No response from agent.' }]
+          }));
+        }
+      } catch (err) {
+        setIsAgentLoading(false);
+        setChatMessages((prev) => ({
+          ...prev,
+          [agent]: [...(prev[agent] || []), { text: 'Error contacting agent.', sender: 'agent', time: new Date() }]
+        }));
+        setConversation((prev) => ({
+          ...prev,
+          [agent]: [...(prev[agent] || []), { role: 'assistant', content: 'Error contacting agent.' }]
+        }));
+      }
     }
   };
 
@@ -193,16 +276,21 @@ const TickerPage = ({ updateUserBalance }) => {
               <div className="chat-room">
                 <h3>Discussion Room</h3>
                 <div className="chat-messages">
-                  {chatMessages.length === 0 ? (
+                  {(chatMessages[popupContent] || []).length === 0 ? (
                     <p className="no-messages">No messages yet. Start the conversation!</p>
                   ) : (
-                    chatMessages.map((msg, index) => (
+                    (chatMessages[popupContent] || []).map((msg, index) => (
                       <div key={index} className={`message ${msg.sender}`}>
-                        <span className="message-text">{msg.text}</span>
+                        {msg.sender === 'agent' ? (
+                          <div className="message-text"><ReactMarkdown>{msg.text}</ReactMarkdown></div>
+                        ) : (
+                          <span className="message-text">{msg.text}</span>
+                        )}
                         <span className="message-time">{msg.time.toLocaleTimeString()}</span>
                       </div>
                     ))
                   )}
+                  {isAgentLoading && <Spinner />}
                 </div>
                 <form className="chat-input" onSubmit={handleSendMessage}>
                   <input
