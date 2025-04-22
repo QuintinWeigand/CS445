@@ -55,6 +55,18 @@ const App = () => {
     }
   }, [loginSuccessful]);
 
+  // Function to update user balance from anywhere
+  const updateUserBalance = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/user_balance', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setUserBalance(response.data.balance);
+    } catch (error) {
+      console.error('Error updating user balance:', error);
+    }
+  };
+
   return (
     <Router>
       <div>
@@ -102,7 +114,7 @@ const App = () => {
             path="/:ticker"
             element={
               <div>
-                <TickerPage />
+                <TickerPage updateUserBalance={updateUserBalance} />
               </div>
             }
           />

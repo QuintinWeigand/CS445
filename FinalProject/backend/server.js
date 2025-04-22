@@ -97,6 +97,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   balance: { type: Number, default: 5000 }, // Added balance field with default value
+  stocks: { type: Object, default: {} }, // Added stocks field as an object with default empty object
 }, { versionKey: false }); // Disabled the version key
 
 const User = mongoose.model('User', userSchema, 'users');
@@ -105,7 +106,7 @@ app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const newUser = new User({ username, password: hashedPassword, stocks: {} }); // Explicitly set stocks as empty object
     await newUser.save();
 
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
@@ -152,10 +153,69 @@ app.get('/api/user_balance', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ balance: user.balance });
+    res.json({ balance: user.balance, stocks: user.stocks }); // Include stocks in response
   } catch (error) {
     console.error('Error retrieving user balance:', error);
     res.status(500).json({ message: 'Error retrieving user balance' });
+  }
+});
+
+app.post('/api/buy', authenticateToken, async (req, res) => {
+  const { ticker, shares } = req.body;
+  const username = req.user.username;
+  if (!ticker || !shares || shares <= 0) {
+    return res.status(400).json({ message: 'Invalid ticker or shares' });
+  }
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Get stock price
+    const stock = await Stock.findOne({ ticker: ticker.toUpperCase() });
+    if (!stock) return res.status(404).json({ message: 'Stock not found' });
+    const totalCost = stock.close_price * shares;
+    if (user.balance < totalCost) {
+      return res.status(400).json({ message: 'Insufficient balance' });
+    }
+    // Update user's stocks and balance
+    user.stocks[ticker] = (user.stocks[ticker] || 0) + shares;
+    user.markModified('stocks'); // Ensure Mongoose tracks the change
+    user.balance -= totalCost;
+    await user.save();
+    res.json({ message: 'Stock purchased', stocks: user.stocks, balance: user.balance });
+  } catch (error) {
+    res.status(500).json({ message: 'Error buying stock: ' + error.message });
+  }
+});
+
+app.post('/api/sell', authenticateToken, async (req, res) => {
+  const { ticker, shares } = req.body;
+  const username = req.user.username;
+  if (!ticker || !shares || shares <= 0) {
+    return res.status(400).json({ message: 'Invalid ticker or shares' });
+  }
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const ownedShares = user.stocks[ticker] || 0;
+    if (ownedShares < shares) {
+      return res.status(400).json({ message: 'Not enough shares to sell' });
+    }
+    // Get stock price
+    const stock = await Stock.findOne({ ticker: ticker.toUpperCase() });
+    if (!stock) return res.status(404).json({ message: 'Stock not found' });
+    const totalGain = stock.close_price * shares;
+    // Update user's stocks and balance
+    user.stocks[ticker] = ownedShares - shares;
+    if (user.stocks[ticker] <= 0) {
+      delete user.stocks[ticker]; // Remove ticker if no shares left
+    }
+    user.markModified('stocks'); // Ensure Mongoose tracks the change
+    user.balance += totalGain;
+    await user.save();
+    res.json({ message: 'Stock sold', stocks: user.stocks, balance: user.balance });
+  } catch (error) {
+    res.status(500).json({ message: 'Error selling stock: ' + error.message });
   }
 });
 

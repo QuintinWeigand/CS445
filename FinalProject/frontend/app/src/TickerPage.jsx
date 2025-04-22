@@ -5,7 +5,7 @@ import axios from 'axios';
 import './TickerPage.css';
 import BuySellPopup from './BuySellPopup';
 
-const TickerPage = () => {
+const TickerPage = ({ updateUserBalance }) => {
   const { ticker } = useParams();
   const [stock, setStock] = useState(null);
   const [error, setError] = useState(null);
@@ -227,7 +227,7 @@ const TickerPage = () => {
       )}
 
       {showBuySellPopup && popupType && (
-        <BuySellPopup type={popupType} ticker={stock.ticker} onClose={closeBuySellPopup} />
+        <BuySellPopup type={popupType} ticker={stock.ticker} onClose={closeBuySellPopup} updateUserBalance={updateUserBalance} />
       )}
     </div>
   );
