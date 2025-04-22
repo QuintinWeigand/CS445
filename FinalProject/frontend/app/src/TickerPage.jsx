@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import StockCard from './StockCard';
 import axios from 'axios';
 import './TickerPage.css';
@@ -17,6 +17,7 @@ const Spinner = () => (
 
 const TickerPage = ({ updateUserBalance }) => {
   const { ticker } = useParams();
+  const navigate = useNavigate();
   const [stock, setStock] = useState(null);
   const [error, setError] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -194,6 +195,14 @@ const TickerPage = ({ updateUserBalance }) => {
   return (
     <div className="ticker-page">
       <div className="header">
+        <button
+          className="home-button"
+          onClick={() => navigate('/')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, right: '2px', top: '6px',position: 'absolute' }}
+          aria-label="Go to home"
+        >
+          <img src={require('./home_button.svg').default} alt="Home" style={{ width: 40, height: 40 }} />
+        </button>
       </div>
 
       <div className="main-content">
