@@ -4,6 +4,7 @@ import StockCard from './StockCard';
 import axios from 'axios';
 import './TickerPage.css';
 import BuySellPopup from './BuySellPopup';
+import PriceLineGraph from './PriceLineGraph';
 
 const TickerPage = ({ updateUserBalance }) => {
   const { ticker } = useParams();
@@ -40,10 +41,15 @@ const TickerPage = ({ updateUserBalance }) => {
         const stockHistory = response.data.find((item) => item.ticker === ticker);
         if (stockHistory) {
           setSamplePriceData(
-            stockHistory.history.map((entry) => ({
-              date: new Date(entry.date_and_time).toISOString().split('T')[0],
-              price: entry.close_price,
-            }))
+            stockHistory.history.map((entry) => {
+              const dateObj = new Date(entry.date_and_time);
+              return {
+                date: dateObj.toISOString().split('T')[0],
+                time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                dateTimeLabel: `${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+                price: entry.close_price,
+              };
+            })
           );
         }
       } catch (error) {
@@ -112,20 +118,7 @@ const TickerPage = ({ updateUserBalance }) => {
           <div className="graph-container">
             <h3>Price History</h3>
             <div className="price-graph">
-              {/* Graph component will go here - using a placeholder div for now */}
-              <div className="graph-placeholder">
-                {samplePriceData.map((dataPoint, index) => (
-                  <div 
-                    key={index}   
-                    className="graph-bar" 
-                    style={{ 
-                      height: `${(dataPoint.price / stock.close_price) * 50}px`,
-                      backgroundColor: dataPoint.price >= samplePriceData[Math.max(0, index-1)].price ? '#4CAF50' : '#F44336'
-                    }}
-                    title={`${dataPoint.date}: $${dataPoint.price.toFixed(2)}`}
-                  />
-                ))}
-              </div>
+              <PriceLineGraph data={samplePriceData} />
             </div>
           </div>
           
