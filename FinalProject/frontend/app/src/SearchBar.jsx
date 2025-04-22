@@ -92,7 +92,7 @@ const SearchBar = ({ onSelectStock }) => {
             suggestions.map((suggestion) => (
               <li
                 key={suggestion.ticker}
-                onClick={() => handleSelect(suggestion.ticker)}
+                onClick={() => (onSelectStock ? handleSelectStock(suggestion.ticker) : handleSelect(suggestion.ticker))}
                 style={styles.dropdownItem}
               >
                 {suggestion.ticker} - {suggestion.company_name} {/* Removed price and percent change */}
