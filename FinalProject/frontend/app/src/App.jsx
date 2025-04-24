@@ -100,44 +100,28 @@ const App = () => {
   return (
     <Router>
       <div>
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', position: 'relative', gap: '16px' }}>
+        <header style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'white', height: '60px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {loginSuccessful && (
-                <AvatarDropdown
-                  username={username}
-                  userBalance={userBalance}
-                  userStocks={userStocks}
-                  onLogout={handleLogout}
-                  stocks={stocks}
-                />
-              )}
-              {!loginSuccessful && (
-                <>
-                  <button onClick={toggleLoginPopup} className="login-button">
-                    Login
-                  </button>
-                  {showLogin && (
-                    <LoginPopup
-                      onClose={toggleLoginPopup}
-                      isRegistering={isRegistering}
-                      onToggleMode={toggleRegisterMode}
-                      setLoginSuccessful={setLoginSuccessful}
-                    />
-                  )}
-                </>
-              )}
+              <AvatarDropdown
+                username={username}
+                userBalance={userBalance}
+                userStocks={userStocks}
+                onLogout={handleLogout}
+                stocks={stocks}
+              />
             </div>
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              <SearchBar />
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+              <span style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1976d2', letterSpacing: '1px', pointerEvents: 'auto' }}>Wealth Wizard</span>
             </div>
+            <SearchBar />
           </div>
-        </div>
+        </header>
         <Routes>
           <Route
             path="/"
             element={
-              <div style={{ position: 'relative', top: '50px' }}>
+              <div style={{ marginTop: '60px' }}>
                 <div className="stock-container">
                   {stocks.map((stock) => (
                     <StockCard

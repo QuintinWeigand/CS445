@@ -98,7 +98,7 @@ const AvatarDropdown = ({ username, userBalance, userStocks, onLogout }) => {
         <div
           style={{
             position: 'absolute',
-            top: '38px',
+            top: '45px',
             left: '30px',
             background: 'white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',

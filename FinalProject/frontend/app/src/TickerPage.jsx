@@ -229,7 +229,7 @@ const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLo
           <SearchBar />
         </div>
       </div>
-      <div className="main-content">
+      <div className="main-content" style={{ marginTop: '60px' }}>
         <div className="top-section">
           <div className="graph-container">
             <h3>Price History</h3>
