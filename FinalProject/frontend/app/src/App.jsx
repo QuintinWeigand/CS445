@@ -6,6 +6,7 @@ import TickerPage from './TickerPage';
 import './App.css';
 import axios from 'axios';
 import LoginPopup from './LoginPopup';
+import AvatarDropdown from './AvatarDropdown';
 
 const App = () => {
   const [stocks, setStocks] = useState([]);
@@ -13,6 +14,9 @@ const App = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginSuccessful, setLoginSuccessful] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
+  const [username, setUsername] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [userStocks, setUserStocks] = useState({});
 
   const toggleLoginPopup = () => {
     setShowLogin(!showLogin);
@@ -47,11 +51,24 @@ const App = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           });
           setUserBalance(response.data.balance);
+          setUserStocks(response.data.stocks || {});
         } catch (error) {
           console.error('Error fetching user balance:', error);
         }
       };
       fetchUserBalance();
+      // Fetch username
+      const fetchUsername = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/username', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          });
+          setUsername(response.data.username);
+        } catch (error) {
+          console.error('Error fetching username:', error);
+        }
+      };
+      fetchUsername();
     }
   }, [loginSuccessful]);
 
@@ -62,20 +79,38 @@ const App = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setUserBalance(response.data.balance);
+      setUserStocks(response.data.stocks || {});
     } catch (error) {
       console.error('Error updating user balance:', error);
     }
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleClick = (e) => {
+      if (!e.target.closest('.avatar-dropdown')) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showDropdown]);
+
   return (
     <Router>
       <div>
         {loginSuccessful ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button onClick={handleLogout} className="logout-button">
-              Logout
-            </button>
-            <span style={{position: 'absolute', top: '23px', left: '130px', fontSize: '18px'}}>Balance: ${userBalance.toFixed(2)}</span>
+          <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '100%', paddingRight: '1870px', position: 'relative' }}>
+              <AvatarDropdown
+                username={username}
+                userBalance={userBalance}
+                userStocks={userStocks}
+                onLogout={handleLogout}
+                stocks={stocks}
+              />
+            </div>
           </div>
         ) : (
           <button onClick={toggleLoginPopup} className="login-button">

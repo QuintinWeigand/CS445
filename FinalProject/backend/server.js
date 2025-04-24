@@ -11,7 +11,7 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-const JWT_SECRET = 'your_jwt_secret_key'; // Replace with a secure secret key
+const JWT_SECRET = 'secret_key';
 
 mongoose.connect('mongodb://localhost:27017/stock_database');
 
@@ -270,6 +270,11 @@ app.post('/api/ollama-chat', async (req, res) => {
     console.error('Ollama agent error:', error.response ? error.response.data : error.message);
     res.status(500).json({ message: 'Ollama agent error: ' + (error.response ? JSON.stringify(error.response.data) : error.message) });
   }
+});
+
+app.get('/api/username', authenticateToken, (req, res) => {
+  // Return the username from the JWT payload
+  res.json({ username: req.user.username });
 });
 
 app.listen(PORT, () => {

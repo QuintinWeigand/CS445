@@ -119,6 +119,7 @@ const styles = {
     width: '90%', // Use percentage for adaptability
     maxWidth: '300px', // Set a maximum width
     fontFamily: 'Calibri, sans-serif',
+    marginLeft: '-500px', // Move the search bar 5px to the left
   },
   input: {
     width: '100%',

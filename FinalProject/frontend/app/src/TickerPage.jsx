@@ -194,17 +194,6 @@ const TickerPage = ({ updateUserBalance }) => {
 
   return (
     <div className="ticker-page">
-      <div className="header">
-        <button
-          className="home-button"
-          onClick={() => navigate('/')}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, right: '2px', top: '6px',position: 'absolute' }}
-          aria-label="Go to home"
-        >
-          <img src={require('./home_button.svg').default} alt="Home" style={{ width: 40, height: 40 }} />
-        </button>
-      </div>
-
       <div className="main-content">
         <div className="top-section">
           <div className="graph-container">
