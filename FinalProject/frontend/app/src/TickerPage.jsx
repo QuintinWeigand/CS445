@@ -6,6 +6,9 @@ import './TickerPage.css';
 import BuySellPopup from './BuySellPopup';
 import PriceLineGraph from './PriceLineGraph';
 import ReactMarkdown from 'react-markdown';
+import homeButton from './home_button.svg';
+import AvatarDropdown from './AvatarDropdown';
+import SearchBar from './SearchBar';
 
 // Spinner component
 const Spinner = () => (
@@ -15,7 +18,7 @@ const Spinner = () => (
   </div>
 );
 
-const TickerPage = ({ updateUserBalance }) => {
+const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLogout, stocks }) => {
   const { ticker } = useParams();
   const navigate = useNavigate();
   const [stock, setStock] = useState(null);
@@ -194,6 +197,38 @@ const TickerPage = ({ updateUserBalance }) => {
 
   return (
     <div className="ticker-page">
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', position: 'relative', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <AvatarDropdown {...(typeof username !== 'undefined' ? { username } : {})} {...(typeof userBalance !== 'undefined' ? { userBalance } : {})} {...(typeof userStocks !== 'undefined' ? { userStocks } : {})} {...(typeof onLogout !== 'undefined' ? { onLogout } : {})} {...(typeof stocks !== 'undefined' ? { stocks } : {})} />
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                background: 'white',
+                border: '1px solid #1976d2',
+                color: '#1976d2',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+                marginRight: '8px',
+                zIndex: 1011
+              }}
+              title="Home"
+              aria-label="Home"
+            >
+              <img src={homeButton} alt="Home" style={{ width: '24px', height: '24px' }} />
+            </button>
+          </div>
+          <SearchBar />
+        </div>
+      </div>
       <div className="main-content">
         <div className="top-section">
           <div className="graph-container">

@@ -100,32 +100,39 @@ const App = () => {
   return (
     <Router>
       <div>
-        {loginSuccessful ? (
-          <div style={{ position: 'fixed', top: 0, right: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '100%', paddingRight: '1870px', position: 'relative' }}>
-              <AvatarDropdown
-                username={username}
-                userBalance={userBalance}
-                userStocks={userStocks}
-                onLogout={handleLogout}
-                stocks={stocks}
-              />
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', position: 'relative', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {loginSuccessful && (
+                <AvatarDropdown
+                  username={username}
+                  userBalance={userBalance}
+                  userStocks={userStocks}
+                  onLogout={handleLogout}
+                  stocks={stocks}
+                />
+              )}
+              {!loginSuccessful && (
+                <>
+                  <button onClick={toggleLoginPopup} className="login-button">
+                    Login
+                  </button>
+                  {showLogin && (
+                    <LoginPopup
+                      onClose={toggleLoginPopup}
+                      isRegistering={isRegistering}
+                      onToggleMode={toggleRegisterMode}
+                      setLoginSuccessful={setLoginSuccessful}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <SearchBar />
             </div>
           </div>
-        ) : (
-          <button onClick={toggleLoginPopup} className="login-button">
-            Login
-          </button>
-        )}
-        {showLogin && (
-          <LoginPopup
-            onClose={toggleLoginPopup}
-            isRegistering={isRegistering}
-            onToggleMode={toggleRegisterMode}
-            setLoginSuccessful={setLoginSuccessful}
-          />
-        )}
-        <SearchBar />
+        </div>
         <Routes>
           <Route
             path="/"
@@ -149,7 +156,14 @@ const App = () => {
             path="/:ticker"
             element={
               <div>
-                <TickerPage updateUserBalance={updateUserBalance} />
+                <TickerPage
+                  updateUserBalance={updateUserBalance}
+                  username={username}
+                  userBalance={userBalance}
+                  userStocks={userStocks}
+                  onLogout={handleLogout}
+                  stocks={stocks}
+                />
               </div>
             }
           />
