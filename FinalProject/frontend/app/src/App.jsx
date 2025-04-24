@@ -103,13 +103,19 @@ const App = () => {
         <header style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'white', height: '60px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <AvatarDropdown
-                username={username}
-                userBalance={userBalance}
-                userStocks={userStocks}
-                onLogout={handleLogout}
-                stocks={stocks}
-              />
+              {loginSuccessful ? (
+                <AvatarDropdown
+                  username={username}
+                  userBalance={userBalance}
+                  userStocks={userStocks}
+                  onLogout={handleLogout}
+                  stocks={stocks}
+                />
+              ) : (
+                <button onClick={toggleLoginPopup} style={{ padding: '8px 16px', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Login
+                </button>
+              )}
             </div>
             <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
               <span style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1976d2', letterSpacing: '1px', pointerEvents: 'auto' }}>Wealth Wizard</span>
@@ -117,6 +123,14 @@ const App = () => {
             <SearchBar />
           </div>
         </header>
+        {showLogin && (
+          <LoginPopup
+            onClose={toggleLoginPopup}
+            isRegistering={isRegistering}
+            onToggleMode={toggleRegisterMode}
+            setLoginSuccessful={setLoginSuccessful}
+          />
+        )}
         <Routes>
           <Route
             path="/"
@@ -147,6 +161,12 @@ const App = () => {
                   userStocks={userStocks}
                   onLogout={handleLogout}
                   stocks={stocks}
+                  toggleLoginPopup={toggleLoginPopup}
+                  showLogin={showLogin}
+                  isRegistering={isRegistering}
+                  toggleRegisterMode={toggleRegisterMode}
+                  setLoginSuccessful={setLoginSuccessful}
+                  loginSuccessful={loginSuccessful}
                 />
               </div>
             }

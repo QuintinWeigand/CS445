@@ -7,8 +7,9 @@ import BuySellPopup from './BuySellPopup';
 import PriceLineGraph from './PriceLineGraph';
 import ReactMarkdown from 'react-markdown';
 import homeButton from './home_button.svg';
-import AvatarDropdown from './AvatarDropdown';
 import SearchBar from './SearchBar';
+import LoginPopup from './LoginPopup';
+import AvatarDropdown from './AvatarDropdown';
 
 // Spinner component
 const Spinner = () => (
@@ -18,7 +19,7 @@ const Spinner = () => (
   </div>
 );
 
-const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLogout, stocks }) => {
+const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLogout, stocks, toggleLoginPopup, showLogin, isRegistering, toggleRegisterMode, setLoginSuccessful, loginSuccessful }) => {
   const { ticker } = useParams();
   const navigate = useNavigate();
   const [stock, setStock] = useState(null);
@@ -197,37 +198,88 @@ const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLo
 
   return (
     <div className="ticker-page">
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'transparent', height: '60px' }}>
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', position: 'relative', gap: '16px' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 100, background: 'white', height: '60px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%', padding: '0 32px', gap: '16px', position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <AvatarDropdown {...(typeof username !== 'undefined' ? { username } : {})} {...(typeof userBalance !== 'undefined' ? { userBalance } : {})} {...(typeof userStocks !== 'undefined' ? { userStocks } : {})} {...(typeof onLogout !== 'undefined' ? { onLogout } : {})} {...(typeof stocks !== 'undefined' ? { stocks } : {})} />
-            <button
-              onClick={() => navigate('/')}
-              style={{
-                background: 'white',
-                border: '1px solid #1976d2',
-                color: '#1976d2',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '20px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
-                marginRight: '8px',
-                zIndex: 1011
-              }}
-              title="Home"
-              aria-label="Home"
-            >
-              <img src={homeButton} alt="Home" style={{ width: '24px', height: '24px' }} />
-            </button>
+            {loginSuccessful ? (
+              <>
+                <AvatarDropdown
+                  username={username}
+                  userBalance={userBalance}
+                  userStocks={userStocks}
+                  onLogout={onLogout}
+                  stocks={stocks}
+                />
+                <button
+                  onClick={() => navigate('/')}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #1976d2',
+                    color: '#1976d2',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+                    zIndex: 1011,
+                    pointerEvents: 'auto'
+                  }}
+                  title="Home"
+                  aria-label="Home"
+                >
+                  <img src={homeButton} alt="Home" style={{ width: '24px', height: '24px' }} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={toggleLoginPopup} style={{ padding: '8px 16px', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  style={{
+                    background: 'white',
+                    border: '1px solid #1976d2',
+                    color: '#1976d2',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+                    zIndex: 1011,
+                    pointerEvents: 'auto'
+                  }}
+                  title="Home"
+                  aria-label="Home"
+                >
+                  <img src={homeButton} alt="Home" style={{ width: '24px', height: '24px' }} />
+                </button>
+              </>
+            )}
+          </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}>
+            <span style={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#1976d2', letterSpacing: '1px', pointerEvents: 'auto' }}>Wealth Wizard</span>
           </div>
           <SearchBar />
         </div>
+        {showLogin && (
+          <LoginPopup
+            onClose={toggleLoginPopup}
+            isRegistering={isRegistering}
+            onToggleMode={toggleRegisterMode}
+            setLoginSuccessful={setLoginSuccessful}
+          />
+        )}
       </div>
       <div className="main-content" style={{ marginTop: '60px' }}>
         <div className="top-section">
