@@ -97,7 +97,7 @@ app.get('/api/stock_history', async (req, res) => {
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  balance: { type: Number, default: 5000 }
+  balance: { type: Number, default: 5000 },
   stocks: { type: Object, default: {} }
 }, { versionKey: false });
 
