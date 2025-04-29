@@ -8,8 +8,8 @@ const PriceLineGraph = ({ data }) => {
   const minPrice = Math.floor(Math.min(...prices));
   const maxPrice = Math.ceil(Math.max(...prices));
 
-  // Add buffer to ensure line is always visible
-  // Buffer is now variable: 7% below minPrice, 7% above maxPrice
+
+
   const lowerBuffer = minPrice !== 0 ? Math.abs(minPrice * 0.07) : 2;
   const upperBuffer = maxPrice !== 0 ? Math.abs(maxPrice * 0.07) : 2;
   const domainMin = minPrice - lowerBuffer;

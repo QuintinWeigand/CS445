@@ -97,9 +97,9 @@ app.get('/api/stock_history', async (req, res) => {
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  balance: { type: Number, default: 5000 }, // Added balance field with default value
-  stocks: { type: Object, default: {} }, // Added stocks field as an object with default empty object
-}, { versionKey: false }); // Disabled the version key
+  balance: { type: Number, default: 5000 }
+  stocks: { type: Object, default: {} }
+}, { versionKey: false });
 
 const User = mongoose.model('User', userSchema, 'users');
 
@@ -107,7 +107,7 @@ app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword, stocks: {} }); // Explicitly set stocks as empty object
+    const newUser = new User({ username, password: hashedPassword, stocks: {} });
     await newUser.save();
 
     const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
@@ -154,7 +154,7 @@ app.get('/api/user_balance', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ balance: user.balance, stocks: user.stocks }); // Include stocks in response
+    res.json({ balance: user.balance, stocks: user.stocks });
   } catch (error) {
     console.error('Error retrieving user balance:', error);
     res.status(500).json({ message: 'Error retrieving user balance' });
@@ -209,7 +209,7 @@ app.post('/api/sell', authenticateToken, async (req, res) => {
     // Update user's stocks and balance
     user.stocks[ticker] = ownedShares - shares;
     if (user.stocks[ticker] <= 0) {
-      delete user.stocks[ticker]; // Remove ticker if no shares left
+      delete user.stocks[ticker];
     }
     user.markModified('stocks'); // Ensure Mongoose tracks the change
     user.balance += totalGain;
@@ -229,7 +229,7 @@ app.post('/api/ollama-chat', async (req, res) => {
     let messages = Array.isArray(conversation) && conversation.length > 0
       ? conversation
       : [{ role: 'user', content: message }];
-    // If a systemPrompt is provided, prepend it as a system message
+
     if (systemPrompt) {
       messages = [{ role: 'system', content: systemPrompt }, ...messages];
     }
@@ -253,7 +253,7 @@ app.post('/api/ollama-chat', async (req, res) => {
             fullContent += parsed.message.content;
           }
         } catch (e) {
-          // Ignore parse errors for incomplete lines
+
         }
       }
     });
@@ -273,7 +273,7 @@ app.post('/api/ollama-chat', async (req, res) => {
 });
 
 app.get('/api/username', authenticateToken, (req, res) => {
-  // Return the username from the JWT payload
+
   res.json({ username: req.user.username });
 });
 

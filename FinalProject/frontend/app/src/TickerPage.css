@@ -1,4 +1,4 @@
-/* TickerPage.css */
+
 .ticker-page {
   width: 100%;
   max-width: 1200px;
@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 50px; /* Updated from 30px to 50px */
+  margin-bottom: 50px;
 }
 
 .main-content {
@@ -114,7 +114,7 @@
   transform: translateY(1px);
 }
 
-/* Updated hover styles for buy and sell buttons to allow movement */
+
 .buy-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -147,7 +147,7 @@
   position: relative;
   overflow: hidden;
   user-select: none;
-  width: 200px; /* Increased width of the images */
+  width: 200px;
   height: 200px;
   display: flex;
   justify-content: center;
@@ -165,7 +165,7 @@
 }
 
 .image-container p {
-  text-align: center; /* Center the text below the images */
+  text-align: center;
 }
 
 .company-image {
@@ -181,7 +181,7 @@
   text-align: center;
 }
 
-/* Refining popup styles */
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -192,7 +192,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1050; /* Increased z-index to ensure it is above all other elements */
+  z-index: 1050;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -301,9 +301,9 @@
   margin-left: auto;
 }
 
-/* Add blue background for agent messages */
+
 .message.agent {
-  background-color: #B3E5FC; /* Even lighter blue */
+  background-color: #B3E5FC;
   color: #003049;
   align-self: flex-start;
   margin-right: auto;
@@ -342,14 +342,14 @@
   cursor: pointer;
 }
 
-/* Add styles for the buy/sell popup */
+
 .popup-buy-sell {
   width: 200px;
-  height: 300px; /* Increased height for taller popups */
+  height: 300px;
   position: fixed;
   top: 50%;
   left: 50%;
-  margin-top: -175px; /* Adjusted to center vertically */
+  margin-top: -175px;
   margin-left: -100px; /* Half of the width */
   background-color: white;
   border-radius: 10px;

@@ -11,7 +11,7 @@ import SearchBar from './SearchBar';
 import LoginPopup from './LoginPopup';
 import AvatarDropdown from './AvatarDropdown';
 
-// Spinner component
+
 const Spinner = () => (
   <div className="spinner-container">
     <div className="spinner"></div>
@@ -25,16 +25,16 @@ const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLo
   const [stock, setStock] = useState(null);
   const [error, setError] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [chatMessages, setChatMessages] = useState({}); // { agentName: [messages] }
+  const [chatMessages, setChatMessages] = useState({});
   const [newMessage, setNewMessage] = useState('');
-  const [conversation, setConversation] = useState({}); // { agentName: [conversation] }
+  const [conversation, setConversation] = useState({});
   const [popupType, setPopupType] = useState('');
   const [showBuySellPopup, setShowBuySellPopup] = useState(false);
   const [popupContent, setPopupContent] = useState('');
   const [samplePriceData, setSamplePriceData] = useState([]);
   const [isAgentLoading, setIsAgentLoading] = useState(false);
 
-  // Define system prompts for each agent
+
   const agentSystemPrompts = {
     'Coinzar the Capital Conjurer':
       "Always respond in less than two hundred words. You are Coinzar the Capital Conjurer, a wise and mystical financial advisor who uses magical metaphors and a positive, encouraging tone. Give advice with a sense of wonder and fun, but keep it practical.",
@@ -98,13 +98,13 @@ const TickerPage = ({ updateUserBalance, username, userBalance, userStocks, onLo
   };
 
   const handlePopupContentClick = (e) => {
-    // Prevent clicks inside the popup from closing it
+  
     e.stopPropagation();
   };
 
   const getAgentSystemPrompt = (agent) => {
     let basePrompt = agentSystemPrompts[agent] || '';
-    // Append last ten prices if available
+  
     if (samplePriceData && samplePriceData.length > 0) {
       const lastTen = samplePriceData.slice(-10);
       const priceList = lastTen.map(p => `${p.dateTimeLabel}: $${p.price.toFixed(2)}`).join(' | ');

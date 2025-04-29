@@ -10,7 +10,7 @@ const BuySellPopup = ({ type, ticker, onClose, updateUserBalance }) => {
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    // Fetch user stocks and balance
+
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -18,7 +18,7 @@ const BuySellPopup = ({ type, ticker, onClose, updateUserBalance }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setBalance(balRes.data.balance);
-        // Get user stocks (from a new endpoint or from token, for now assume backend returns stocks in /api/user_balance)
+
         if (balRes.data.stocks && balRes.data.stocks[ticker]) {
           setOwned(balRes.data.stocks[ticker]);
         } else {
@@ -48,7 +48,7 @@ const BuySellPopup = ({ type, ticker, onClose, updateUserBalance }) => {
       setOwned(res.data.stocks[ticker] || 0);
       setBalance(res.data.balance);
       setAmount('');
-      if (updateUserBalance) updateUserBalance(); // Update global balance in App.jsx
+      if (updateUserBalance) updateUserBalance();
     } catch (err) {
       setError(err.response?.data?.message || 'Error processing transaction');
     } finally {

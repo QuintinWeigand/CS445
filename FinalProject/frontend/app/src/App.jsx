@@ -20,7 +20,7 @@ const App = () => {
 
   const toggleLoginPopup = () => {
     setShowLogin(!showLogin);
-    setIsRegistering(false); // Reset to login mode when toggling
+    setIsRegistering(false);
   };
 
   const toggleRegisterMode = () => {
@@ -28,7 +28,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setLoginSuccessful(false); // Reset loginSuccessful on logout
+    setLoginSuccessful(false);
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const App = () => {
         }
       };
       fetchUserBalance();
-      // Fetch username
+
       const fetchUsername = async () => {
         try {
           const response = await axios.get('http://localhost:5000/api/username', {
@@ -72,7 +72,7 @@ const App = () => {
     }
   }, [loginSuccessful]);
 
-  // Function to update user balance from anywhere
+
   const updateUserBalance = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/user_balance', {
@@ -85,7 +85,7 @@ const App = () => {
     }
   };
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     if (!showDropdown) return;
     const handleClick = (e) => {

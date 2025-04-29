@@ -1,12 +1,12 @@
 import yfinance as yf
 from pymongo import MongoClient
 
-# Connect to MongoDB
+
 client = MongoClient("mongodb://localhost:27017/")
 db = client["stock_database"]
 collection = db["stock_prices"]
 
-# Get distinct tickers from the collection
+
 tickers = collection.distinct("ticker")
 
 for ticker in tickers:
@@ -15,7 +15,7 @@ for ticker in tickers:
         long_name = stock_info.get("longName")
 
         if long_name:
-            # Update all documents with this ticker
+            
             result = collection.update_many(
                 {"ticker": ticker},
                 {"$set": {"company_name": long_name}}

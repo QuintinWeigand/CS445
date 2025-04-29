@@ -37,7 +37,7 @@ const AvatarDropdown = ({ username, userBalance, userStocks, onLogout }) => {
     if (showDropdown) fetchStockValues();
   }, [showDropdown, userStocks]);
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     if (!showDropdown) return;
     const handleClick = (e) => {
@@ -54,7 +54,7 @@ const AvatarDropdown = ({ username, userBalance, userStocks, onLogout }) => {
       <div
         onClick={() => {
           setShowDropdown((prev) => !prev);
-          setShowTooltip(false); // Hide tooltip when dropdown opens
+          setShowTooltip(false);
         }}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
@@ -72,7 +72,7 @@ const AvatarDropdown = ({ username, userBalance, userStocks, onLogout }) => {
           cursor: 'pointer',
           userSelect: 'none',
           position: 'relative',
-          zIndex: 1010, // ensure avatar is above dropdown
+          zIndex: 1010,
         }}
       >
         <span>{username ? username[0].toUpperCase() : 'U'}</span>
@@ -88,8 +88,8 @@ const AvatarDropdown = ({ username, userBalance, userStocks, onLogout }) => {
           borderRadius: '6px',
           fontSize: '15px',
           whiteSpace: 'nowrap',
-          zIndex: 2000, // ensure tooltip is above everything
-          pointerEvents: 'none', // allow mouse events to pass through
+          zIndex: 2000,
+          pointerEvents: 'none',
         }}>
           {username + "'s account"}
         </div>

@@ -6,11 +6,11 @@ const SearchBar = ({ onSelectStock }) => {
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [noResults, setNoResults] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false); // State to control dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const inputRef = useRef(null); // Ref for the input field
-  const dropdownRef = useRef(null); // Ref for the dropdown
-  const navigate = useNavigate(); // Hook for navigation
+  const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const fetchSuggestions = async (query) => {
     if (!query) return;
@@ -21,7 +21,7 @@ const SearchBar = ({ onSelectStock }) => {
         setNoResults(true);
         return;
       }
-      setSuggestions(response.data); // Fuzzy matches
+      setSuggestions(response.data);
       setNoResults(false);
     } catch (error) {
       console.error('Error fetching suggestions:', error);
@@ -33,38 +33,38 @@ const SearchBar = ({ onSelectStock }) => {
   const handleChange = (e) => {
     setSearch(e.target.value);
     fetchSuggestions(e.target.value);
-    setShowDropdown(true); // Show dropdown when the input changes
+    setShowDropdown(true);
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      navigate(`/${search.toUpperCase()}`); // Convert to uppercase before navigating
+      navigate(`/${search.toUpperCase()}`);
     }
   };
 
   const handleSelectStock = async (ticker) => {
     try {
       const response = await axios.get(`http://localhost:5000/api/search/${ticker}`);
-      onSelectStock(response.data[0]); // Pass stock data back to parent component
-      setShowDropdown(false); // Hide dropdown after selection
+      onSelectStock(response.data[0]);
+      setShowDropdown(false);
     } catch (error) {
       console.error('Error fetching stock data:', error);
     }
   };
 
   const handleSelect = (ticker) => {
-    const upperCaseTicker = ticker.toUpperCase(); // Convert to uppercase
+    const upperCaseTicker = ticker.toUpperCase();
     setSearch(upperCaseTicker);
-    navigate(`/${upperCaseTicker}`); // Navigate to /:ticker in uppercase
+    navigate(`/${upperCaseTicker}`);
     setSuggestions([]);
-    setShowDropdown(false); // Hide dropdown after selection
+    setShowDropdown(false);
   };
 
-  // Close dropdown if the user clicks outside the search bar or dropdown
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (inputRef.current && !inputRef.current.contains(e.target) && dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false); // Hide dropdown when clicking outside
+        setShowDropdown(false);
       }
     };
 
@@ -78,7 +78,7 @@ const SearchBar = ({ onSelectStock }) => {
   return (
     <div style={styles.container}>
       <input
-        ref={inputRef} // Attach the input ref
+        ref={inputRef}
         type="text"
         value={search}
         onChange={handleChange}
@@ -115,11 +115,10 @@ const styles = {
   container: {
     position: 'absolute',
     top: '10px',
-    right: '10px', // Adjusted for responsiveness
-    width: '90%', // Use percentage for adaptability
-    maxWidth: '300px', // Set a maximum width
+    right: '10px',
+    width: '90%',
+    maxWidth: '300px',
     fontFamily: 'Calibri, sans-serif',
-    marginLeft: '-500px', // Move the search bar 5px to the left
   },
   input: {
     width: '100%',

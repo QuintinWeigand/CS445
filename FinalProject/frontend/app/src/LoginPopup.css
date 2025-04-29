@@ -1,4 +1,4 @@
-/* Styles for the LoginPopup component */
+
 
 .login-popup {
   position: fixed;
@@ -28,13 +28,13 @@
   color: #333;
 }
 
-/* Adjusted the input fields to fit within the popup */
+
 .login-popup-content input {
-  width: calc(100% - 20px); /* Reduced width to fit within the popup */
-  max-width: 280px; /* Added a max-width to prevent overflow */
+  width: calc(100% - 20px);
+  max-width: 280px;
   padding: 10px;
-  margin: 10px auto; /* Centered the input fields */
-  display: block; /* Ensures block layout for proper alignment */
+  margin: 10px auto;
+  display: block;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1em;

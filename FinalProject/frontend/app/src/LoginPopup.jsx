@@ -35,11 +35,11 @@ const LoginPopup = ({ onClose, isRegistering, onToggleMode, setLoginSuccessful }
       console.log('Success:', data);
 
       if (data.token) {
-        localStorage.setItem('token', data.token); // Store the JWT token
+        localStorage.setItem('token', data.token);
       }
 
       if (!isRegistering) {
-        setLoginSuccessful(true); // Set loginSuccessful to true after successful login
+        setLoginSuccessful(true);
       }
 
       if (isRegistering) {
@@ -59,10 +59,10 @@ const LoginPopup = ({ onClose, isRegistering, onToggleMode, setLoginSuccessful }
 
         const loginData = await loginResponse.json();
         if (loginData.token) {
-          localStorage.setItem('token', loginData.token); // Store the JWT token after registration login
+          localStorage.setItem('token', loginData.token);
         }
 
-        setLoginSuccessful(true); // Set loginSuccessful to true after successful registration and login
+        setLoginSuccessful(true);
       }
 
       onClose();
